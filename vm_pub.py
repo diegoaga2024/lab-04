@@ -13,9 +13,6 @@ def on_connect(client, userdata, flags, rc):
 
 
 if __name__ == '__main__':
-    #get IP address
-    ip_address=0 
-    """your code here"""
     #create a client object
     client = mqtt.Client()
     
@@ -32,20 +29,29 @@ if __name__ == '__main__':
     client. If the connection request is successful, the callback attached to
     `client.on_connect` will be called."""
 
-    client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
+    client.connect("eclipse.usc.edu", 11000, 60)
 
     """ask paho-mqtt to spawn a separate thread to handle
     incoming and outgoing mqtt messages."""
     client.loop_start()
-    time.sleep(1)
+    time.sleep(1) #causes program to pause for 1 second to complete connection process
 
     while True:
         #replace user with your USC username in all subscriptions
-        client.publish("user/ipinfo", f"{ip_address}")
+        #the f-string is evalutued and passed as the argument to the publish method to the subtopic diegoaga/ipinfo on the MQTT broker
+        client.publish("diegoaga/ipinfo", f"{ip_address}")
         print("Publishing ip address")
         time.sleep(4)
-
         #get date and time 
-        """your code here"""
-        #publish date and time in their own topics
-        """your code here"""
+        #The datetimenow() returns the current date and time as the imported datetime object
+        #The strftime() method formats it into a string with format below
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        #publish date in its own topic
+        #split the current_datetime string into a list of substrings, using the space character as a delimiter. 
+        client.publish("diegoaga/date", current_datetime.split(" ")[0])
+        print("Publishing date", current_datetime.split(" ")[0])
+        #publish time in its own topic
+        client.publish("diegoaga/time", current_datetime.split(" ")[1])
+        print("Publishing time")
+        time.sleep(4)
+        
